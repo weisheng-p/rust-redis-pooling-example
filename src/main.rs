@@ -4,15 +4,14 @@
 #[macro_use] extern crate rocket_contrib;
 extern crate redis;
 
-use rocket_contrib::databases::redis::Connection;
-use redis::Commands;
+use rocket_contrib::databases::redis::Commands;
 
 #[database("redis_pool")]
 struct LogsDbConn(rocket_contrib::databases::redis::Connection);
 
 #[get("/")]
-fn index(con: LogsDbConn) -> &'static str {
-    "Hello, world!"
+fn index(con: LogsDbConn) -> String {
+    con.get("abc").unwrap()
 }
 
 fn main() {
