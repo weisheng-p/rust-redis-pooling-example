@@ -4,15 +4,20 @@
 #[macro_use] extern crate rocket_contrib;
 extern crate redis;
 
-#[database("redis_pool")]
-struct LogsDbConn(redis::Connection);
+use rocket_contrib::databases::redis::Connection;
+use redis::Commands;
 
+#[database("redis_pool")]
+struct LogsDbConn(rocket_contrib::databases::redis::Connection);
 
 #[get("/")]
-fn index() -> &'static str {
+fn index(con: LogsDbConn) -> &'static str {
     "Hello, world!"
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite()
+        .attach(LogsDbConn::fairing())
+        .mount("/", routes![index])
+        .launch();
 }
